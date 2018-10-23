@@ -9,6 +9,8 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import com.activemq.ActiveMQContext;
 
 public class MQConfiguration {
@@ -23,7 +25,7 @@ public class MQConfiguration {
 		try {
 			String topicFactoryConName = ActiveMQContext.getProperty(mqConfig);
 			this.topicName = (mqConfig.equals("distributedMsg") ? ActiveMQContext.getProperty("distributedTopic"):ActiveMQContext.getProperty("normalTopic"));
-			TopicConnectionFactory factory = (TopicConnectionFactory) ActiveMQContext.getContext()
+			TopicConnectionFactory factory = (ActiveMQConnectionFactory) ActiveMQContext.getContext()
 					.lookup(topicFactoryConName);
 			this.topicConnection = factory.createTopicConnection();
 			this.topicConnection.start();

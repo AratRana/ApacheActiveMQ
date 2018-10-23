@@ -6,6 +6,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 
@@ -20,16 +21,17 @@ public class TestPublisher implements MQPublisher {
 		if (config == null) {
 			throw new IllegalArgumentException("config == null");
 		}
+		Topic topic = config.getTopic();
 		this.configurationName = config.getMqConfig();
 		this.topicSession = config.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-		this.topicPublisher = this.topicSession.createPublisher(config.getTopic());
-		MessageConsumer msgConsumer = this.topicSession.createConsumer(config.getTopic());
+		this.topicPublisher = this.topicSession.createPublisher(topic);
+		MessageConsumer msgConsumer = this.topicSession.createConsumer(topic);
 		msgConsumer.setMessageListener((MessageListener) messageListener);
 	}
 
 	@Override
 	public void publish(String msg) throws JMSException {
-		this.topicPublisher.publish(createMessage(msg,this.topicSession));
+		this.topicPublisher.publish(createMessage(msg, this.topicSession));
 	}
 
 	private Message createMessage(String msg, Session session) throws JMSException {
@@ -37,4 +39,7 @@ public class TestPublisher implements MQPublisher {
 		return message;
 	}
 
+	public String getConfigurationName() {
+		return this.configurationName;
+	}
 }

@@ -54,7 +54,22 @@ public class ActiveMQStartUpServlet extends HttpServlet {
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			releasePublisher(publisher);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void releasePublisher(MQPublisher publisher) {
+		if (publisher == null) return;
+		@SuppressWarnings("rawtypes")
+		LinkedList publishers;
+		TestPublisher poolablePublisher = (TestPublisher)publisher;
+		publishers = getPooledPublishers(poolablePublisher.getConfigurationName());
+		synchronized (publishers) {
+            publishers.addLast(poolablePublisher);
+        }
+		
 	}
 
 	private MQPublisher acquirePublisher(String mqConfig) {

@@ -1,4 +1,4 @@
-package com.activemq;
+package activemq;
 
 import java.io.IOException;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package com.activemq.servlet;
+package activemq.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +9,9 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 
+import activemq.ActiveMQContext;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import com.activemq.ActiveMQContext;
 
 public class MQConfiguration {
 	private static final Map configurations = new HashMap();
@@ -19,15 +19,20 @@ public class MQConfiguration {
 	private String topicName;
 	private TopicConnection topicConnection = null;
 
-	private MQConfiguration(String mqConfig, String string, String string2) {
+	private MQConfiguration(String mqConfig, String user, String password) {
 		this.mqConfig = mqConfig;
 
 		try {
 			String topicFactoryConName = ActiveMQContext.getProperty(mqConfig);
-			this.topicName = (mqConfig.equals("distributedMsg") ? ActiveMQContext.getProperty("distributedTopic"):ActiveMQContext.getProperty("normalTopic"));
+			this.topicName = (mqConfig.equals("distributedMsg") ? ActiveMQContext.getProperty("distributedTopic")
+					: ActiveMQContext.getProperty("normalTopic"));
 			TopicConnectionFactory factory = (ActiveMQConnectionFactory) ActiveMQContext.getContext()
 					.lookup(topicFactoryConName);
-			this.topicConnection = factory.createTopicConnection();
+			if (ActiveMQContext.getProperty("activemq.external").equals("true")) {
+				this.topicConnection = factory.createTopicConnection(ActiveMQContext.getProperty("activemq.user"),ActiveMQContext.getProperty("activemq.password"));
+			} else {
+				this.topicConnection = factory.createTopicConnection("system","manager");
+			}
 			this.topicConnection.start();
 		} catch (Exception e) {
 			System.out.println("error: " + e);
@@ -47,7 +52,7 @@ public class MQConfiguration {
 		synchronized (configurations) {
 			config = (MQConfiguration) configurations.get(mqConfig);
 			if (config == null) {
-				config = new MQConfiguration(mqConfig, "userName", "userPassword");
+				config = new MQConfiguration(mqConfig, "system", "manager");
 			}
 			configurations.put(mqConfig, config);
 		}

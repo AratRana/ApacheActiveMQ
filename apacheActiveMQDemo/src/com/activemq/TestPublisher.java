@@ -1,4 +1,4 @@
-package com.activemq;
+package activemq;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -10,7 +10,7 @@ import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 
-import com.activemq.servlet.MQConfiguration;
+import activemq.servlet.MQConfiguration;
 
 public class TestPublisher implements MQPublisher {
 	private final String configurationName;

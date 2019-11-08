@@ -1,4 +1,4 @@
-package com.activemq;
+package activemq;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
